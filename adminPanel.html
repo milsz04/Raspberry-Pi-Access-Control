@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Students Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #f3f4f6;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+        }
+        .btn-back {
+            background-color: #fff;
+            color: #5a5c69;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+        .btn-back:hover {
+            transform: translateX(-3px);
+            background-color: #e2e6ea;
+        }
+        .list-group-item {
+            border: none;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 15px 20px;
+        }
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+        .form-control {
+            border-radius: 10px;
+            padding: 10px 15px;
+        }
+        .btn-add {
+            border-radius: 10px;
+            padding: 10px;
+            font-weight: 600;
+        }
+        .user-icon {
+            background-color: #e8f0fe;
+            color: #4e73df;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+    </style>
+</head>
+<body class="py-5">
+
+<div class="container">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="/" class="btn btn-back rounded-pill px-4 py-2">
+            <i class="fas fa-arrow-left me-2"></i> back to logs
+        </a>
+        <h4 class="text-secondary fw-bold">Admin Pannel</h4>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-5 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="m-0"><i class="fas fa-user-plus me-2"></i> New User</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form action="/add/" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small text-uppercase fw-bold">Card UID</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0"><i class="fas fa-id-card"></i></span>
+                                <input type="text" name="uid" class="form-control bg-light border-0" placeholder="np. A1 B2 C3 D4" required>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted small text-uppercase fw-bold">Name and Surname</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0"><i class="fas fa-user"></i></span>
+                                <input type="text" name="name" class="form-control bg-light border-0" placeholder="np. Andrzej duda" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 btn-add shadow-sm">
+                           Done and add
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card h-100">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="m-0 text-primary fw-bold"><i class="fas fa-users me-2"></i> Database</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for user in users %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="user-icon">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fw-bold">{{ user.name }}</h6>
+                                    <small class="text-muted font-monospace">{{ user.uid }}</small>
+                                </div>
+                            </div>
+                            <form action="/remove/" method="POST">
+                                <input type="hidden" name="uid" value="{{ user.uid }}">
+                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3" title="Usuń z bazy">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </button>
+                            </form>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

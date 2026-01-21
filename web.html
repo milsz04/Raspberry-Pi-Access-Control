@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iot Security Pannel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --bg-color: #f3f4f6;
+            --card-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #5a5c69;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s ease-in-out;
+            margin-bottom: 20px;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+        }
+
+
+        .stat-card-blue { background: linear-gradient(45deg, #4e73df, #224abe); color: white; }
+        .stat-card-green { background: linear-gradient(45deg, #1cc88a, #13855c); color: white; }
+        .stat-card-red { background: linear-gradient(45deg, #e74a3b, #be2617); color: white; }
+
+
+        .table thead th {
+            background-color: #f8f9fc;
+            color: #4e73df;
+            border-bottom: 2px solid #e3e6f0;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fc;
+        }
+
+        .badge-access {
+            background-color: #d1fae5;
+            color: #065f46;
+            padding: 8px 12px;
+            border-radius: 20px;
+        }
+        .badge-denied {
+            background-color: #fee2e2;
+            color: #991b1b;
+            padding: 8px 12px;
+            border-radius: 20px;
+        }
+
+    
+        .live-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: #1cc88a;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(28, 200, 138, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(28, 200, 138, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(28, 200, 138, 0); }
+        }
+
+        .header-title {
+            font-weight: 700;
+            color: #2e384d;
+        }
+        
+        .img-thumbnail {
+            border-radius: 10px;
+            transition: transform 0.2s;
+        }
+        .img-thumbnail:hover {
+            transform: scale(1.5);
+            z-index: 10;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow">
+  <div class="container">
+    <a class="navbar-brand" href="#">
+        <i class="fas fa-shield-alt me-2"></i> Security System
+    </a>
+    <span class="navbar-text text-white">
+        <span class="live-indicator"></span> System Online
+    </span>
+  </div>
+</nav>
+
+<div class="container">
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card stat-card-blue h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Users</div>
+                            <div class="h3 mb-0 font-weight-bold">{{ users|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card stat-card-green h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Accessed Entries</div>
+                            <div class="h3 mb-0 font-weight-bold">{{ stats.granted }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card stat-card-red h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Detected Intruders</div>
+                            <div class="h3 mb-0 font-weight-bold">{{ stats.denied }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Real Time Monitoring</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Card UID</th>
+                                    <th>Status</th>
+                                    <th>Picture</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in logs %}
+                                <tr>
+                                    <td>
+                                        <i class="far fa-clock me-1 text-muted"></i> 
+                                        {{ log.time }}
+                                    </td>
+                                    <td class="fw-bold">{{ log.uid }}</td>
+                                    <td>
+                                        {% if log.granted %}
+                                            <span class="badge-access"><i class="fas fa-check me-1"></i> ACCESSED</span>
+                                        {% else %}
+                                            <span class="badge-denied"><i class="fas fa-ban me-1"></i> DENIED</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if log.photo %}
+                                            <a href="/media/{{ log.photo }}" target="_blank">
+                                                <img src="/media/{{ log.photo }}" class="img-thumbnail" style="height: 40px; width: 40px; object-fit: cover;">
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted small">-</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="4" class="text-center py-4 text-muted">No Data in system</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card text-center p-4">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fas fa-database fa-4x text-primary mb-3"></i>
+                    </div>
+                    <h4 class="card-title">Students Database</h4>
+                    <p class="card-text text-muted">Manage the access of the students</p>
+                    <a href="/manage/" class="btn btn-primary btn-lg w-100 shadow-sm rounded-pill mt-2">
+                        <i class="fas fa-cog me-2"></i> Configuration
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card mt-4 bg-dark text-white">
+                <div class="card-body p-4">
+                    <h5><i class="fas fa-info-circle me-2"></i> System Status</h5>
+                    <hr class="bg-light">
+                    <p class="mb-1"><small>MQTT Server:</small> <strong>ONLINE</strong></p>
+                    <p class="mb-1"><small>Database:</small> <strong>Connected</strong></p>
+                    <p class="mb-0"><small>Last Update:</small> <strong>Now</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let rawId = "{{ latest_id|default:'0' }}";
+    let currentLastId = parseInt(rawId);
+
+    console.log("System start. Local ID: " + currentLastId);
+
+    setInterval(function() {
+        fetch('/api/check_update/')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network Mistake: " + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+               
+                console.log("Server ID: " + data.last_id + " | We have: " + currentLastId);
+
+                if (data.last_id > currentLastId) {
+                    console.log("!!! New Data !!! Refreshing...");
+                    location.reload();
+                }
+            })
+            .catch(error => console.error('Script Error:', error));
+    }, 2000); 
+</script>
+</body>
+</html>
